@@ -1,14 +1,17 @@
 function saveMeasurement(data) {
-    const measurements = JSON.parse(localStorage.getItem('measurements')) || [];
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser || data.length === 0) return;
+
+    const measurements = JSON.parse(localStorage.getItem('measurements') || []);
     
     measurements.push({
-        userName: localStorage.getItem('currentUser') || 'Anonyme',
+        userName: currentUser,
         timestamp: new Date().toISOString(),
         data: data
     });
     
     localStorage.setItem('measurements', JSON.stringify(measurements));
-    localStorage.removeItem('currentMeasurement'); // Nettoyage
+    localStorage.removeItem('currentMeasurement');
 }
 
 function getAllMeasurements() {

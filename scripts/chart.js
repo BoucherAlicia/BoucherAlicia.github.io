@@ -17,8 +17,9 @@ function initChart(canvasId) {
                 x: {
                     type: 'time',
                     time: {
+                        unit: 'second',
                         displayFormats: {
-                            minute: 'HH:mm'
+                            second: 'HH:mm:ss'
                         }
                     },
                     title: {

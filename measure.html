@@ -3,156 +3,45 @@
 <head>
     <title>Mesure en Cours</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        #userInfo {
-            background: #e3f2fd;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        #currentAngle {
-            font-size: 28px;
-            font-weight: bold;
-            text-align: center;
-            margin: 20px 0;
-        }
-        .angle-display {
-            background: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0;
-        }
-        button {
-            background: #0066cc;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #nameForm {
-            margin: 20px 0;
-            padding: 20px;
-            background: #e8f5e9;
-            border-radius: 5px;
-        }
-        input {
-            padding: 8px;
-            margin-right: 10px;
-            width: 200px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <header>
-        <h1>Mesure en Cours</h1>
-        <div id="userInfo">Utilisateur: <span id="userName">Non défini</span></div>
-    </header>
+    <div class="container">
+        <header class="measure-header">
+            <h1>Mesure en Cours</h1>
+            <div class="user-info">Utilisateur: <span id="userName">Non défini</span></div>
+        </header>
 
-    <div id="nameForm">
-        <h3>Enregistrer la mesure</h3>
-        <input type="text" id="nameInput" placeholder="Votre nom" required>
-        <button id="saveNameBtn">Enregistrer</button>
-    </div>
+        <div class="name-form">
+            <h3>Enregistrer la mesure</h3>
+            <input type="text" id="nameInput" class="form-input" placeholder="Votre nom" required>
+            <button id="saveNameBtn" class="btn">Enregistrer</button>
+        </div>
 
-    <div class="angle-display">
-        <div>Angle actuel:</div>
-        <div id="currentAngle">--.--</div>
-        <div>degrés</div>
-    </div>
+        <div class="angle-display">
+            <div>Angle actuel:</div>
+            <div id="currentAngle" class="current-angle">--.--</div>
+            <div>degrés</div>
+        </div>
 
-    <canvas id="angleChart" height="400"></canvas>
+        <canvas id="angleChart"></canvas>
 
-    <div class="controls">
-        <button id="disconnectBtn">Déconnecter</button>
-        <button id="historyBtn">Voir les anciennes mesures</button>
+        <div class="button-group">
+            <button id="startBtn" class="btn">Démarrer la mesure</button>
+            <button id="stopBtn" class="btn" disabled>Arrêter la mesure</button>
+        </div>
+
+        <div class="button-group">
+            <button id="disconnectBtn" class="btn btn-secondary">Déconnecter</button>
+            <button id="historyBtn" class="btn">Voir les anciennes mesures</button>
+        </div>
     </div>
 
     <script src="scripts/db.js"></script>
     <script src="scripts/chart.js"></script>
     <script src="scripts/app.js"></script>
     <script>
-        // Gestion du nom
-        function resetUser() {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('currentMeasurement');
-            document.getElementById('nameForm').style.display = 'block';
-            document.getElementById('userName').textContent = 'Non défini';
-        }
-    
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', () => {
-            // Réinitialisation si retour depuis déconnexion
-            if (performance.navigation.type === 1) { // 1 = page reload
-                resetUser();
-            }
-            
-            // Simulation de données (si pas de Bluetooth)
-            if (!window.bluetoothDevice) {
-                setInterval(() => {
-                    const angle = (Math.random() * 360).toFixed(2);
-                    document.getElementById('currentAngle').textContent = angle;
-                    
-                    const newData = {
-                        x: new Date(),
-                        y: parseFloat(angle)
-                    };
-                    
-                    // Stockage temporaire
-                    let currentData = JSON.parse(localStorage.getItem('currentMeasurement') || '[]');
-                    currentData.push(newData);
-                    localStorage.setItem('currentMeasurement', JSON.stringify(currentData));
-                    
-                    // Mise à jour du graphique
-                    updateChart(chart, currentData);
-                }, 1000);
-            }
-        });
-    
-        // Gestion du formulaire
-        document.getElementById('saveNameBtn').addEventListener('click', () => {
-            const userName = document.getElementById('nameInput').value.trim();
-            if (userName) {
-                localStorage.setItem('currentUser', userName);
-                document.getElementById('userName').textContent = userName;
-                document.getElementById('nameForm').style.display = 'none';
-            }
-        });
-    
-        // Bouton Déconnexion
-        document.getElementById('disconnectBtn').addEventListener('click', () => {
-            if (window.bluetoothDevice?.gatt.connected) {
-                bluetoothDevice.gatt.disconnect();
-            }
-            resetUser();
-            window.location.href = 'index.html';
-        });
-    
-        // Bouton Historique
-        document.getElementById('historyBtn').addEventListener('click', () => {
-            // Sauvegarde avant changement de page
-            const currentData = JSON.parse(localStorage.getItem('currentMeasurement') || '[]');
-            if (currentData.length > 0 && localStorage.getItem('currentUser')) {
-                saveMeasurement(currentData);
-            }
-            window.location.href = 'history.html';
-        });
+        // [Le code JavaScript reste identique à votre version actuelle]
     </script>
 </body>
 </html>

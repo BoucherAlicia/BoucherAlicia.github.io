@@ -2,53 +2,18 @@
 <html>
 <head>
     <title>Connexion Capteur d'Angle</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: #f5f5f5;
-        }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 500px;
-        }
-        button {
-            background: #0066cc;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        #status {
-            margin: 20px 0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .disconnected { background: #ffebee; color: #c62828; }
-        .connected { background: #e8f5e9; color: #2e7d32; }
-        h1 { color: #333; }
-    </style>
+    <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Connexion au Capteur</h1>
-        <p>Connectez-vous au module Bluetooth HC-05 pour commencer</p>
-        
-        <div id="status" class="disconnected">Statut: Non connecté</div>
-        
-        <button id="connectBtn">Se connecter au Bluetooth</button>
+    <div class="index-container">
+        <div class="login-box">
+            <h1>Connexion au Capteur</h1>
+            <p>Connectez-vous au module Bluetooth HC-05 pour commencer</p>
+            
+            <div id="status" class="status disconnected">Statut: Non connecté</div>
+            
+            <button id="connectBtn" class="btn">Se connecter au Bluetooth</button>
+        </div>
     </div>
 
     <script src="scripts/app.js"></script>
@@ -58,13 +23,14 @@
                 await connectBluetooth();
                 window.location.href = 'measure.html';
             } catch (error) {
-                document.getElementById('status').textContent = `Erreur: ${error}`;
-                document.getElementById('status').className = 'disconnected';
+                const status = document.getElementById('status');
+                status.textContent = `Erreur: ${error}`;
+                status.className = 'status disconnected';
             }
         });
-         // Réinitialisation systématique au chargement
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('currentMeasurement');
+        
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentMeasurement');
     </script>
 </body>
 </html>
