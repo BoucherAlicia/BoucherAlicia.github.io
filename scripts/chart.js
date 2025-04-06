@@ -71,7 +71,9 @@ function initHistoryChart(ctx) {
                     time: {
                         displayFormats: {
                             second: 'HH:mm:ss'
-                        }
+                        },
+                        tooltipFormat: 'HH:mm:ss', // Format des tooltips
+                        unit: 'second'
                     },
                     ticks: {
                         maxRotation: 0,

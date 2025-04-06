@@ -97,10 +97,14 @@
                 const maxAngle = Math.max(...angles).toFixed(2);
                 const minAngle = Math.min(...angles).toFixed(2);
                 const avgAngle = (angles.reduce((a, b) => a + b, 0) / angles.length).toFixed(2);
-                
+                function formatSessionDate(timestamp) {
+                    const date = new Date(timestamp);
+                    // Format JJ/MM/AAAA HH:MM:SS
+                    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+                }
                 card.innerHTML = `
                     <div class="measurement-header">
-                        <div class="measurement-title">Session du ${new Date(measurement.timestamp).toLocaleString()}</div>
+                        <div class="measurement-title">Session du ${formatSessionDate(measurement.timestamp)}</div>
                         
                         <div class="measurement-meta">${measurement.data.length} mesures</div>
                     </div>
