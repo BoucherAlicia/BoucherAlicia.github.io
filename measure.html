@@ -12,7 +12,7 @@
             <div class="user-info">Utilisateur: <span id="userName">Non défini</span></div>
         </header>
 
-        <div class="name-form">
+        <div id="nameForm" class="name-form">
             <h3>Enregistrer la mesure</h3>
             <input type="text" id="nameInput" class="form-input" placeholder="Votre nom" required>
             <button id="saveNameBtn" class="btn">Enregistrer</button>
@@ -41,7 +41,125 @@
     <script src="scripts/chart.js"></script>
     <script src="scripts/app.js"></script>
     <script>
-        // [Le code JavaScript reste identique à votre version actuelle]
+        // Initialisation
+        let chart;
+        let measureInterval;
+        let angleData = [];
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialiser le graphique
+            const ctx = document.getElementById('angleChart').getContext('2d');
+            chart = initChart(ctx);
+            
+            // Charger le nom si existant
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                document.getElementById('userName').textContent = savedUser;
+                document.getElementById('nameForm').style.display = 'none';
+            }
+            
+            // Charger les données existantes
+            const savedData = localStorage.getItem('currentMeasurement');
+            if (savedData) {
+                angleData = JSON.parse(savedData);
+                updateChart(chart, angleData);
+                if (angleData.length > 0) {
+                    document.getElementById('currentAngle').textContent = 
+                        angleData[angleData.length-1].y.toFixed(2);
+                }
+            }
+        });
+
+        // Gestion du nom
+        document.getElementById('saveNameBtn').addEventListener('click', () => {
+            const userName = document.getElementById('nameInput').value.trim();
+            if (userName) {
+                localStorage.setItem('currentUser', userName);
+                document.getElementById('userName').textContent = userName;
+                document.getElementById('nameForm').style.display = 'none';
+            }
+        });
+
+        // Boutons Start/Stop
+        document.getElementById('startBtn').addEventListener('click', startMeasurement);
+        document.getElementById('stopBtn').addEventListener('click', stopMeasurement);
+
+        function startMeasurement() {
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            
+            // Mode simulation si Bluetooth non connecté
+            if (!window.bluetoothCharacteristic) {
+                measureInterval = setInterval(() => {
+                    const angle = (Math.random() * 360).toFixed(2);
+                    const event = {
+                        target: { value: new TextEncoder().encode(`Angle: ${angle} deg`) }
+                    };
+                    handleData(event);
+                }, 1000);
+            } else {
+                // Mode Bluetooth
+                bluetoothCharacteristic.startNotifications();
+                bluetoothCharacteristic.addEventListener('characteristicvaluechanged', handleData);
+            }
+        }
+
+        function stopMeasurement() {
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            
+            clearInterval(measureInterval);
+            if (window.bluetoothCharacteristic) {
+                bluetoothCharacteristic.stopNotifications();
+            }
+        }
+
+        function handleData(event) {
+            const value = event.target.value;
+            const textDecoder = new TextDecoder();
+            const rawData = textDecoder.decode(value);
+            
+            const angleMatch = rawData.match(/Angle: ([0-9.]+) deg/);
+            if (angleMatch) {
+                const angle = parseFloat(angleMatch[1]);
+                const timestamp = new Date();
+                
+                // Mise à jour de l'affichage
+                document.getElementById('currentAngle').textContent = angle.toFixed(2);
+                
+                // Ajout aux données
+                angleData.push({
+                    x: timestamp,
+                    y: angle
+                });
+                
+                // Mise à jour du graphique
+                updateChart(chart, angleData);
+                
+                // Sauvegarde temporaire
+                localStorage.setItem('currentMeasurement', JSON.stringify(angleData));
+            }
+        }
+
+        // Bouton Déconnexion
+        document.getElementById('disconnectBtn').addEventListener('click', () => {
+            stopMeasurement();
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('currentMeasurement');
+            if (window.bluetoothDevice?.gatt.connected) {
+                bluetoothDevice.gatt.disconnect();
+            }
+            window.location.href = 'index.html';
+        });
+
+        // Bouton Historique
+        document.getElementById('historyBtn').addEventListener('click', () => {
+            // Sauvegarde avant changement de page
+            if (angleData.length > 0 && localStorage.getItem('currentUser')) {
+                saveMeasurement(angleData);
+            }
+            window.location.href = 'history.html';
+        });
     </script>
 </body>
 </html>

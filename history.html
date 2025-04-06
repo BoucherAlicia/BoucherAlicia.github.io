@@ -23,7 +23,95 @@
     <script src="scripts/db.js"></script>
     <script src="scripts/chart.js"></script>
     <script>
-        // [Le code JavaScript reste identique à votre version actuelle]
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = localStorage.getItem('currentUser');
+            const historyContainer = document.getElementById('historyContainer');
+            const userDisplay = document.getElementById('currentUserDisplay');
+            
+            // Afficher le nom de l'utilisateur
+            userDisplay.textContent = currentUser || 'Non défini';
+            
+            // Si pas d'utilisateur connecté
+            if (!currentUser) {
+                historyContainer.innerHTML = `
+                    <div class="no-data">
+                        <h3>Aucun utilisateur connecté</h3>
+                        <p>Veuillez vous connecter pour voir votre historique</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Récupérer les mesures de l'utilisateur actuel seulement
+            const userMeasurements = getAllMeasurements()
+                .filter(m => m.userName === currentUser)
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Si pas de mesures
+            if (userMeasurements.length === 0) {
+                historyContainer.innerHTML = `
+                    <div class="no-data">
+                        <h3>Aucune mesure enregistrée</h3>
+                        <p>Effectuez des mesures pour les voir apparaître ici</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Afficher chaque mesure
+            userMeasurements.forEach((measurement, index) => {
+                const card = document.createElement('div');
+                card.className = 'measurement-card';
+                
+                // Calcul des stats
+                const angles = measurement.data.map(d => d.y);
+                const maxAngle = Math.max(...angles).toFixed(2);
+                const minAngle = Math.min(...angles).toFixed(2);
+                const avgAngle = (angles.reduce((a, b) => a + b, 0) / angles.length).toFixed(2);
+                
+                card.innerHTML = `
+                    <div class="measurement-header">
+                        <div class="measurement-title">Session du ${new Date(measurement.timestamp).toLocaleString()}</div>
+                        <div class="measurement-meta">${measurement.data.length} mesures</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart-${index}"></canvas>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-box">
+                            <span>Max: </span><span class="stat-value">${maxAngle}°</span>
+                        </div>
+                        <div class="stat-box">
+                            <span>Min: </span><span class="stat-value">${minAngle}°</span>
+                        </div>
+                        <div class="stat-box">
+                            <span>Moyenne: </span><span class="stat-value">${avgAngle}°</span>
+                        </div>
+                    </div>
+                `;
+                
+                historyContainer.appendChild(card);
+                
+                // Initialiser le graphique après un léger délai
+                setTimeout(() => {
+                    const ctx = document.getElementById(`chart-${index}`).getContext('2d');
+                    const chart = initChart(`chart-${index}`);
+                    
+                    // Formater les données pour Chart.js
+                    const chartData = measurement.data.map(point => ({
+                        x: new Date(point.x),
+                        y: point.y
+                    }));
+                    
+                    updateChart(chart, chartData);
+                }, 50);
+            });
+        });
+        
+        // Bouton retour
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'measure.html';
+        });
     </script>
 </body>
 </html>

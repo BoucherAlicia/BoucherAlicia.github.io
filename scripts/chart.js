@@ -1,5 +1,4 @@
-function initChart(canvasId) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
+function initChart(ctx) {
     return new Chart(ctx, {
         type: 'line',
         data: {
@@ -7,7 +6,6 @@ function initChart(canvasId) {
                 label: 'Angle (degrés)',
                 borderColor: 'rgb(75, 192, 192)',
                 borderWidth: 2,
-                fill: false,
                 data: []
             }]
         },
@@ -21,10 +19,6 @@ function initChart(canvasId) {
                         displayFormats: {
                             second: 'HH:mm:ss'
                         }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Temps'
                     }
                 },
                 y: {
@@ -41,10 +35,7 @@ function initChart(canvasId) {
 }
 
 function updateChart(chart, data) {
-    chart.data.datasets[0].data = data.map(point => ({
-        x: point.x,
-        y: point.y
-    }));
+    chart.data.datasets[0].data = data;
     chart.update();
 }
 
