@@ -239,3 +239,42 @@ h1, h2, h3 {
         padding: 1.5rem;
     }
 }
+
+/* Style de base des boutons */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* Style principal (bleu) */
+.btn-primary {
+    background-color: #0066cc;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0052a3;
+}
+
+/* Style secondaire (gris) */
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .btn {
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+}
