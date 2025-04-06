@@ -1,6 +1,6 @@
 let bluetoothDevice;
 let bluetoothCharacteristic;
-let isSimulationMode = true; // Ajout d'un flag pour le mode simulation
+let isSimulationMode = false; // Ajout d'un flag pour le mode simulation
 
 
 // Simulation avec générateurs de données
