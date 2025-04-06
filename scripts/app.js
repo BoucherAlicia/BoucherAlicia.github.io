@@ -28,16 +28,13 @@ async function connectBluetooth() {
         // Mode Bluetooth réel
         localStorage.setItem('connectionMode', 'bluetooth');
         try {
-            // UUID standard pour SPP (Serial Port Profile)
-            const serviceUuid = '00001101-0000-1000-8000-00805f9b34fb';
-            
             bluetoothDevice = await navigator.bluetooth.requestDevice({
-                acceptAllDevices: true,
-                optionalServices: [serviceUuid]
+                acceptAllDevices: true, // Affiche tous les appareils
+                optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] // UUID SPP
             });
-            
+    
             const server = await bluetoothDevice.gatt.connect();
-            const service = await server.getPrimaryService(serviceUuid);
+            const service = await server.getPrimaryService('00001101-0000-1000-8000-00805f9b34fb');
             const characteristics = await service.getCharacteristics();
             
             bluetoothCharacteristic = characteristics[0];
@@ -45,8 +42,12 @@ async function connectBluetooth() {
             
             return true;
         } catch (error) {
-            console.error('Bluetooth error:', error);
-            throw error;
+            console.error("Erreur Bluetooth:", error);
+            // Fallback vers le mode simulation
+            isSimulationMode = true;
+            localStorage.setItem('connectionMode', 'simulation');
+            alert("Connexion Bluetooth échouée. Mode simulation activé.");
+            return true;
         }
     }
 }
