@@ -10,6 +10,15 @@
     <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
 </head>
 <body>
+    <div class="data-actions">
+        <button id="exportBtn" class="btn btn-secondary">
+            <i class="icon">📤</i> Exporter toutes les données
+        </button>
+        <button id="importBtn" class="btn btn-secondary">
+            <i class="icon">📥</i> Importer des données
+        </button>
+        <input type="file" id="importFile" accept=".json" hidden>
+    </div>
     <div class="container">
         <header class="history-header">
             <h1>Votre Historique</h1>
@@ -114,7 +123,7 @@
                                 Supprimer cette session
                             </button>
                     </div>
-                    
+
                 `;
                 
                 historyContainer.appendChild(card);
@@ -174,6 +183,72 @@
         const updated = measurements.filter(m => m.userName !== username);
         localStorage.setItem('measurements', JSON.stringify(updated));
     }
+
+    // Export des données
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        const data = {
+            measurements: getAllMeasurements(),
+            lastExport: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `export-mesures-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert('Export réussi ! Fichier téléchargé.');
+    });
+
+    // Import des données
+    document.getElementById('importBtn').addEventListener('click', () => {
+        if (confirm('Attention : Cela écrasera vos données actuelles. Continuer ?')) {
+            document.getElementById('importFile').click();
+        }
+    });
+
+    document.getElementById('importFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const importedData = JSON.parse(event.target.result);
+                
+                if (!importedData.measurements || !Array.isArray(importedData.measurements)) {
+                    throw new Error('Format de fichier invalide');
+                }
+                
+                localStorage.setItem('measurements', JSON.stringify(importedData.measurements));
+                alert(`Import réussi ! ${importedData.measurements.length} mesures chargées.`);
+                location.reload();
+            } catch (error) {
+                console.error(error);
+                alert('Erreur : Le fichier semble corrompu ou invalide.');
+            }
+        };
+        reader.readAsText(file);
+        
+        // Reset pour permettre le rechargement du même fichier
+        e.target.value = '';
+    });
+
+    // Message d'information
+    const infoBox = document.createElement('div');
+    infoBox.className = 'data-info';
+    infoBox.innerHTML = `
+        <strong>ℹ Information :</strong> Les données sont stockées localement sur cet appareil.
+        Utilisez l'export/import pour les transférer vers un autre ordinateur.
+    `;
+    document.querySelector('.container').insertBefore(infoBox, document.querySelector('.history-card'));
+
+    
     </script>
 </body>
 </html>
