@@ -37,6 +37,7 @@
 
     <script src="scripts/app.js"></script>
     <script>
+        localStorage.removeItem('bluetoothConnected');
         document.getElementById('connectBtn').addEventListener('click', async () => {
             try {
                 await connectBluetooth();

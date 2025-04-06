@@ -26,6 +26,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const currentUser = localStorage.getItem('currentUser');
+            const backBtn = document.getElementById('backBtn');
+            // Vérifier le mode de connexion
+            const connectionMode = localStorage.getItem('connectionMode');
+
+            if (connectionMode === 'simulation' || connectionMode === 'bluetooth') {
+                backBtn.textContent = '← Retour à la mesure';
+                backBtn.onclick = () => window.location.href = 'measure.html';
+            } else {
+                backBtn.textContent = '← Retour à l\'accueil';
+                backBtn.onclick = () => window.location.href = 'index.html';
+            }
+
             if (!currentUser) {
                 window.location.href = 'index.html';
                 return;

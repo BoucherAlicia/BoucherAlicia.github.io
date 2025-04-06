@@ -43,6 +43,7 @@
     <script src="scripts/chart.js"></script>
     <script src="scripts/app.js"></script>
     <script>
+        localStorage.setItem('bluetoothConnected', 'true');
         // Initialisation
         let chart;
         let measureInterval;
@@ -152,6 +153,9 @@
         }
         // Bouton Déconnexion
         document.getElementById('disconnectBtn').addEventListener('click', () => {
+            if (typeof disconnectBluetooth === 'function') {
+                disconnectBluetooth();
+            }
             stopMeasurement();
             localStorage.removeItem('currentUser');
             localStorage.removeItem('currentMeasurement');
