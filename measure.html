@@ -51,7 +51,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Initialiser le graphique
             const ctx = document.getElementById('angleChart').getContext('2d');
-            window.chart = initChart(ctx);
+            window.chart = initMeasureChart(ctx);
             
             // Charger le nom si existant
             const savedUser = localStorage.getItem('currentUser');

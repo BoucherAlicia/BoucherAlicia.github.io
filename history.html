@@ -96,7 +96,7 @@
                 // Initialiser le graphique après un léger délai
                 setTimeout(() => {
                     const ctx = document.getElementById(`chart-${index}`).getContext('2d');
-                    const chart = initChart(`chart-${index}`);
+                    const chart = initHistoryChart(`chart-${index}`);
                     
                     // Formater les données pour Chart.js
                     const chartData = measurement.data.map(point => ({
