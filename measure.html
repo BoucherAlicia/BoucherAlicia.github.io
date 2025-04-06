@@ -3,6 +3,8 @@
 <head>
     <title>Mesure en Cours</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
@@ -49,7 +51,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Initialiser le graphique
             const ctx = document.getElementById('angleChart').getContext('2d');
-            chart = initChart(ctx);
+            window.chart = initChart(ctx);
             
             // Charger le nom si existant
             const savedUser = localStorage.getItem('currentUser');
@@ -115,35 +117,39 @@
         }
 
         function handleData(event) {
-        const value = event.target.value;
-        const textDecoder = new TextDecoder();
-        const rawData = textDecoder.decode(value);
-        
-        const angleMatch = rawData.match(/Angle: ([0-9.]+) deg/);
-        if (angleMatch) {
-            const angle = parseFloat(angleMatch[1]);
-            const timestamp = new Date();
-            
-            // Mise à jour de l'affichage
-            document.getElementById('currentAngle').textContent = angle.toFixed(2);
-            
-            // Ajout aux données (limité à 100 points pour performance)
-            angleData.push({
-                x: timestamp,
-                y: angle
-            });
-            
-            if (angleData.length > 100) {
-                angleData.shift(); // Supprime le plus ancien point
+            if (!window.chart) {
+                console.error("Chart not initialized");
+                return;
             }
+            const value = event.target.value;
+            const textDecoder = new TextDecoder();
+            const rawData = textDecoder.decode(value);
             
-            // Mise à jour du graphique
-            updateChart(chart, angleData);
-            
-            // Sauvegarde temporaire
-            localStorage.setItem('currentMeasurement', JSON.stringify(angleData));
+            const angleMatch = rawData.match(/Angle: ([0-9.]+) deg/);
+            if (angleMatch) {
+                const angle = parseFloat(angleMatch[1]);
+                const timestamp = new Date();
+                
+                // Mise à jour de l'affichage
+                document.getElementById('currentAngle').textContent = angle.toFixed(2);
+                
+                // Ajout aux données (limité à 100 points pour performance)
+                angleData.push({
+                    x: timestamp,
+                    y: angle
+                });
+                
+                if (angleData.length > 100) {
+                    angleData.shift(); // Supprime le plus ancien point
+                }
+                
+                // Mise à jour du graphique
+                updateChart(window.chart, angleData);
+                
+                // Sauvegarde temporaire
+                localStorage.setItem('currentMeasurement', JSON.stringify(angleData));
+            }
         }
-    }
         // Bouton Déconnexion
         document.getElementById('disconnectBtn').addEventListener('click', () => {
             stopMeasurement();

@@ -7,7 +7,6 @@ function initChart(ctx) {
                 borderColor: 'rgb(75, 192, 192)',
                 borderWidth: 2,
                 pointRadius: 3,
-                pointBackgroundColor: 'rgba(75, 192, 192, 0.8)',
                 fill: false,
                 data: []
             }]
@@ -15,12 +14,13 @@ function initChart(ctx) {
         options: {
             responsive: true,
             animation: {
-                duration: 0 // Désactive l'animation pour des mises à jour instantanées
+                duration: 0
             },
             scales: {
                 x: {
                     type: 'time',
                     time: {
+                        unit: 'second',
                         displayFormats: {
                             second: 'HH:mm:ss'
                         },
@@ -45,12 +45,18 @@ function initChart(ctx) {
 }
 
 function updateChart(chart, data) {
-    // Conversion des dates en objets Date si nécessaire
-    const formattedData = data.map(point => ({
+    if (!chart || !chart.data || !chart.data.datasets) {
+        console.error("Chart is not properly initialized");
+        return;
+    }
+
+    chart.data.datasets[0].data = data.map(point => ({
         x: point.x instanceof Date ? point.x : new Date(point.x),
         y: point.y
     }));
     
-    chart.data.datasets[0].data = formattedData;
-    chart.update('none'); // 'none' pour éviter l'animation
+    chart.update('none');
 }
+
+window.initChart = initChart;
+window.updateChart = updateChart;
