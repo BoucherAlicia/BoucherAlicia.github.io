@@ -93,11 +93,7 @@
                     <div class="measurement-card">
                         <div class="measurement-header">
                             <div class="measurement-title">Session du ${new Date(measurement.timestamp).toLocaleString()}</div>
-                            <div class="measurement-actions">
-                                <button class="btn btn-sm btn-danger delete-session" data-id="${measurement.timestamp}">
-                                    Supprimer cette session
-                                </button>
-                            </div>
+                            
                             <div class="measurement-meta">${measurement.data.length} mesures</div>
                         </div>
                         <div class="chart-container style="width:100%; height:250px;">
@@ -114,6 +110,11 @@
                                 <span>Moyenne: </span><span class="stat-value">${avgAngle}°</span>
                             </div>
                         </div>
+                        <div class="measurement-actions">
+                                <button class="btn btn-sm btn-danger delete-session" data-id="${measurement.timestamp}">
+                                    Supprimer cette session
+                                </button>
+                            </div>
                 `;
                 
                 historyContainer.appendChild(card);

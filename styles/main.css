@@ -263,12 +263,12 @@ h1, h2, h3 {
 
 /* Styles pour les boutons de suppression */
 .btn-danger {
-    background-color: #dc3545;
+    background-color: #84323a;
     color: white;
 }
 
 .btn-danger:hover {
-    background-color: #c82333;
+    background-color: #ac6168;
 }
 
 .btn-sm {
