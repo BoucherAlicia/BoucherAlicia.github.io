@@ -115,32 +115,35 @@
         }
 
         function handleData(event) {
-            const value = event.target.value;
-            const textDecoder = new TextDecoder();
-            const rawData = textDecoder.decode(value);
+        const value = event.target.value;
+        const textDecoder = new TextDecoder();
+        const rawData = textDecoder.decode(value);
+        
+        const angleMatch = rawData.match(/Angle: ([0-9.]+) deg/);
+        if (angleMatch) {
+            const angle = parseFloat(angleMatch[1]);
+            const timestamp = new Date();
             
-            const angleMatch = rawData.match(/Angle: ([0-9.]+) deg/);
-            if (angleMatch) {
-                const angle = parseFloat(angleMatch[1]);
-                const timestamp = new Date();
-                
-                // Mise à jour de l'affichage
-                document.getElementById('currentAngle').textContent = angle.toFixed(2);
-                
-                // Ajout aux données
-                angleData.push({
-                    x: timestamp,
-                    y: angle
-                });
-                
-                // Mise à jour du graphique
-                updateChart(chart, angleData);
-                
-                // Sauvegarde temporaire
-                localStorage.setItem('currentMeasurement', JSON.stringify(angleData));
+            // Mise à jour de l'affichage
+            document.getElementById('currentAngle').textContent = angle.toFixed(2);
+            
+            // Ajout aux données (limité à 100 points pour performance)
+            angleData.push({
+                x: timestamp,
+                y: angle
+            });
+            
+            if (angleData.length > 100) {
+                angleData.shift(); // Supprime le plus ancien point
             }
+            
+            // Mise à jour du graphique
+            updateChart(chart, angleData);
+            
+            // Sauvegarde temporaire
+            localStorage.setItem('currentMeasurement', JSON.stringify(angleData));
         }
-
+    }
         // Bouton Déconnexion
         document.getElementById('disconnectBtn').addEventListener('click', () => {
             stopMeasurement();

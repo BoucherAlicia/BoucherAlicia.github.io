@@ -6,19 +6,29 @@ function initChart(ctx) {
                 label: 'Angle (degrés)',
                 borderColor: 'rgb(75, 192, 192)',
                 borderWidth: 2,
+                pointRadius: 3,
+                pointBackgroundColor: 'rgba(75, 192, 192, 0.8)',
+                fill: false,
                 data: []
             }]
         },
         options: {
             responsive: true,
+            animation: {
+                duration: 0 // Désactive l'animation pour des mises à jour instantanées
+            },
             scales: {
                 x: {
                     type: 'time',
                     time: {
-                        unit: 'second',
                         displayFormats: {
                             second: 'HH:mm:ss'
-                        }
+                        },
+                        tooltipFormat: 'HH:mm:ss'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Temps'
                     }
                 },
                 y: {
@@ -35,9 +45,12 @@ function initChart(ctx) {
 }
 
 function updateChart(chart, data) {
-    chart.data.datasets[0].data = data;
-    chart.update();
+    // Conversion des dates en objets Date si nécessaire
+    const formattedData = data.map(point => ({
+        x: point.x instanceof Date ? point.x : new Date(point.x),
+        y: point.y
+    }));
+    
+    chart.data.datasets[0].data = formattedData;
+    chart.update('none'); // 'none' pour éviter l'animation
 }
-
-window.initChart = initChart;
-window.updateChart = updateChart;
