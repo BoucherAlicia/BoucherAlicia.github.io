@@ -1,15 +1,14 @@
 function saveMeasurement(data) {
-    const userName = localStorage.getItem('currentUser') || 'Anonyme';
-    const measurements = JSON.parse(localStorage.getItem('measurements') || []);
+    const measurements = JSON.parse(localStorage.getItem('measurements')) || [];
     
     measurements.push({
-        userName,
+        userName: localStorage.getItem('currentUser') || 'Anonyme',
         timestamp: new Date().toISOString(),
         data: data
     });
     
     localStorage.setItem('measurements', JSON.stringify(measurements));
-    localStorage.removeItem('currentMeasurement');
+    localStorage.removeItem('currentMeasurement'); // Nettoyage
 }
 
 function getAllMeasurements() {

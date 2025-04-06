@@ -62,6 +62,9 @@
                 document.getElementById('status').className = 'disconnected';
             }
         });
+         // Réinitialisation systématique au chargement
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('currentMeasurement');
     </script>
 </body>
 </html>

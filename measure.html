@@ -88,7 +88,44 @@
     <script src="scripts/chart.js"></script>
     <script src="scripts/app.js"></script>
     <script>
-        // Gestion du nom d'utilisateur
+        // Gestion du nom
+        function resetUser() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('currentMeasurement');
+            document.getElementById('nameForm').style.display = 'block';
+            document.getElementById('userName').textContent = 'Non défini';
+        }
+    
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Réinitialisation si retour depuis déconnexion
+            if (performance.navigation.type === 1) { // 1 = page reload
+                resetUser();
+            }
+            
+            // Simulation de données (si pas de Bluetooth)
+            if (!window.bluetoothDevice) {
+                setInterval(() => {
+                    const angle = (Math.random() * 360).toFixed(2);
+                    document.getElementById('currentAngle').textContent = angle;
+                    
+                    const newData = {
+                        x: new Date(),
+                        y: parseFloat(angle)
+                    };
+                    
+                    // Stockage temporaire
+                    let currentData = JSON.parse(localStorage.getItem('currentMeasurement') || '[]');
+                    currentData.push(newData);
+                    localStorage.setItem('currentMeasurement', JSON.stringify(currentData));
+                    
+                    // Mise à jour du graphique
+                    updateChart(chart, currentData);
+                }, 1000);
+            }
+        });
+    
+        // Gestion du formulaire
         document.getElementById('saveNameBtn').addEventListener('click', () => {
             const userName = document.getElementById('nameInput').value.trim();
             if (userName) {
@@ -97,74 +134,25 @@
                 document.getElementById('nameForm').style.display = 'none';
             }
         });
-
-        // Chargement du nom si déjà enregistré
-        const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) {
-            document.getElementById('userName').textContent = savedUser;
-            document.getElementById('nameForm').style.display = 'none';
-        }
-
-        // Bouton historique
-        document.getElementById('historyBtn').addEventListener('click', () => {
-            window.location.href = 'history.html';
-        });
-
-        // Bouton déconnexion
+    
+        // Bouton Déconnexion
         document.getElementById('disconnectBtn').addEventListener('click', () => {
-            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+            if (window.bluetoothDevice?.gatt.connected) {
                 bluetoothDevice.gatt.disconnect();
             }
+            resetUser();
             window.location.href = 'index.html';
         });
-
-        // Initialisation du graphique
-        const chart = initChart('angleChart');
-        let angleData = [];
-
-        // Écoute des données Bluetooth
-        if (bluetoothCharacteristic) {
-            bluetoothCharacteristic.addEventListener('characteristicvaluechanged', event => {
-                const value = event.target.value;
-                const textDecoder = new TextDecoder();
-                const rawData = textDecoder.decode(value);
-                
-                const angleMatch = rawData.match(/Angle: ([0-9.]+) deg/);
-                if (angleMatch) {
-                    const angle = parseFloat(angleMatch[1]);
-                    const timestamp = new Date();
-                    
-                    // Mise à jour de l'affichage
-                    document.getElementById('currentAngle').textContent = angle.toFixed(2);
-                    
-                    // Ajout aux données
-                    angleData.push({
-                        x: timestamp,
-                        y: angle
-                    });
-                    
-                    // Mise à jour du graphique
-                    updateChart(chart, angleData);
-                    
-                    // Sauvegarde temporaire
-                    localStorage.setItem('currentMeasurement', JSON.stringify(angleData));
-                }
-            });
-        }
-
-        // Chargement des données en cours si existantes
-        const savedData = localStorage.getItem('currentMeasurement');
-        if (savedData) {
-            angleData = JSON.parse(savedData).map(item => ({
-                x: new Date(item.x),
-                y: item.y
-            }));
-            updateChart(chart, angleData);
-            if (angleData.length > 0) {
-                document.getElementById('currentAngle').textContent = 
-                    angleData[angleData.length-1].y.toFixed(2);
+    
+        // Bouton Historique
+        document.getElementById('historyBtn').addEventListener('click', () => {
+            // Sauvegarde avant changement de page
+            const currentData = JSON.parse(localStorage.getItem('currentMeasurement') || '[]');
+            if (currentData.length > 0 && localStorage.getItem('currentUser')) {
+                saveMeasurement(currentData);
             }
-        }
+            window.location.href = 'history.html';
+        });
     </script>
 </body>
 </html>
