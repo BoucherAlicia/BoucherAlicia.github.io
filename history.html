@@ -26,6 +26,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
             const historyContainer = document.getElementById('historyContainer');
             const userDisplay = document.getElementById('currentUserDisplay');
             
