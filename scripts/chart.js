@@ -13,6 +13,12 @@ function initChart(ctx) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    right: 0
+                }
+            },
             animation: {
                 duration: 0
             },

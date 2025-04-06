@@ -118,6 +118,13 @@ body {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     padding: 20px;
     margin-bottom: 25px;
+    box-sizing: border-box;
+}
+
+.measurement-card canvas {
+    display: block;
+    width: 100% !important;
+    height: 250px !important;
 }
 
 .measurement-header {
@@ -136,6 +143,7 @@ body {
     position: relative;
     height: 250px;
     width: 100%;
+    margin: 15px 0;
 }
 
 .stats {
