@@ -33,5 +33,19 @@ window.addEventListener('beforeunload', () => {
     }
 });
 
+function deletePatientData(username) {
+    const measurements = getAllMeasurements();
+    const updated = measurements.filter(m => m.userName !== username);
+    localStorage.setItem('measurements', JSON.stringify(updated));
+}
+
+function deleteSingleMeasurement(timestamp) {
+    const measurements = getAllMeasurements();
+    const updated = measurements.filter(m => m.timestamp !== timestamp);
+    localStorage.setItem('measurements', JSON.stringify(updated));
+}
+
+window.deletePatientData = deletePatientData;
+window.deleteSingleMeasurement = deleteSingleMeasurement;
 window.saveMeasurement = saveMeasurement;
 window.getAllMeasurements = getAllMeasurements;

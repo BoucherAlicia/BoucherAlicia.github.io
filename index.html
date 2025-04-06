@@ -32,6 +32,9 @@
                 
                 <button id="viewHistoryBtn" class="index-btn">Voir l'historique</button>
             </div>
+            <div class="delete-patient-section">
+                <button id="deletePatientBtn" class="btn btn-sm btn-danger">Effacer un nom de patient</button>
+            </div>
         </div>
     </div>
 
@@ -77,6 +80,26 @@
                 }
             });
         });
+        document.getElementById('deletePatientBtn').addEventListener('click', () => {
+        const select = document.getElementById('patientSelect');
+        const selectedPatient = select.value;
+        
+        if (!selectedPatient) {
+            alert('Veuillez sélectionner un patient');
+            return;
+        }
+        
+        if (confirm(`Voulez-vous vraiment supprimer définitivement le patient "${selectedPatient}" et toutes ses données ?`)) {
+            // Supprimer toutes les mesures du patient
+            const measurements = JSON.parse(localStorage.getItem('measurements')) || [];
+            const updated = measurements.filter(m => m.userName !== selectedPatient);
+            localStorage.setItem('measurements', JSON.stringify(updated));
+            
+            // Mettre à jour la liste déroulante
+            select.remove(select.selectedIndex);
+            alert(`Patient "${selectedPatient}" supprimé avec succès`);
+        }
+    });
     </script>
 </body>
 </html>

@@ -260,3 +260,33 @@ h1, h2, h3 {
 .index-btn:hover {
     background-color: #2980b9;
 }
+
+/* Styles pour les boutons de suppression */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.measurement-actions {
+    margin-left: auto;
+}
+
+.history-actions {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.delete-patient-section {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
