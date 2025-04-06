@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Historique des Mesures</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        h1 { color: #333; }
+        .measurement {
+            background: #f5f5f5;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .measurement-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Historique des Mesures</h1>
+        <button id="backBtn">Retour à la mesure</button>
+    </header>
+
+    <div id="historyContainer">
+        <!-- Les mesures seront ajoutées ici dynamiquement -->
+    </div>
+
+    <script src="scripts/db.js"></script>
+    <script src="scripts/chart.js"></script>
+    <script>
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'measure.html';
+        });
+
+        // Chargement de l'historique
+        document.addEventListener('DOMContentLoaded', () => {
+            const historyContainer = document.getElementById('historyContainer');
+            const measurements = getAllMeasurements();
+            
+            if (measurements.length === 0) {
+                historyContainer.innerHTML = `
+                    <div class="no-data">
+                        <h3>Aucune mesure enregistrée</h3>
+                        <p>Revenez après avoir effectué des mesures</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            measurements.forEach((measurement, index) => {
+                const measurementDiv = document.createElement('div');
+                measurementDiv.className = 'measurement';
+                
+                measurementDiv.innerHTML = `
+                    <div class="measurement-header">
+                        <h3>${measurement.userName} - ${new Date(measurement.timestamp).toLocaleString()}</h3>
+                        <div>${measurement.data.length} points</div>
+                    </div>
+                    <canvas id="chart-${index}" height="200"></canvas>
+                `;
+                
+                historyContainer.appendChild(measurementDiv);
+                
+                // Initialisation du graphique pour cette mesure
+                setTimeout(() => {
+                    const ctx = document.getElementById(`chart-${index}`).getContext('2d');
+                    const chart = initChart(`chart-${index}`);
+                    updateChart(chart, measurement.data);
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
