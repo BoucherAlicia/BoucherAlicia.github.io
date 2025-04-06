@@ -16,6 +16,18 @@
             <div id="status" class="status disconnected">Statut: Non connecté</div>
             
             <button id="connectBtn" class="btn">Se connecter au Bluetooth</button>
+
+
+            <div class="history-access">
+                <h2>Accès à l'historique</h2>
+                <div class="form-group">
+                    <label for="patientSelect">Sélectionnez un patient :</label>
+                    <select id="patientSelect" class="form-control">
+                        <option value="">-- Choisissez un patient --</option>
+                        <!-- Les options seront ajoutées dynamiquement -->
+                    </select>
+                </div>
+                <button id="viewHistoryBtn" class="btn btn-secondary">Voir l'historique</button>
         </div>
     </div>
 
@@ -34,6 +46,32 @@
         
         localStorage.removeItem('currentUser');
         localStorage.removeItem('currentMeasurement');
+
+        
+        // Charger la liste des patients au démarrage
+        document.addEventListener('DOMContentLoaded', () => {
+            const measurements = JSON.parse(localStorage.getItem('measurements')) || [];
+            const uniquePatients = [...new Set(measurements.map(m => m.userName))];
+            const select = document.getElementById('patientSelect');
+            
+            uniquePatients.forEach(patient => {
+                const option = document.createElement('option');
+                option.value = patient;
+                option.textContent = patient;
+                select.appendChild(option);
+            });
+        });
+
+        // Bouton Voir l'historique
+        document.getElementById('viewHistoryBtn').addEventListener('click', () => {
+            const selectedPatient = document.getElementById('patientSelect').value;
+            if (selectedPatient) {
+                localStorage.setItem('currentUser', selectedPatient);
+                window.location.href = 'history.html';
+            } else {
+                alert('Veuillez sélectionner un patient');
+            }
+        });
     </script>
 </body>
 </html>
