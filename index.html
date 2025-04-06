@@ -9,25 +9,29 @@
 </head>
 <body>
     <div class="index-container">
-        <div class="login-box">
-            <h1>Connexion au Capteur</h1>
-            <p>Connectez-vous au module Bluetooth HC-05 pour commencer</p>
-            
-            <div id="status" class="status disconnected">Statut: Non connecté</div>
-            
-            <button id="connectBtn" class="btn">Se connecter au Bluetooth</button>
-
-
-            <div class="history-access">
-                <h2>Accès à l'historique</h2>
+        <div class="container">
+            <!-- Section Connexion Bluetooth -->
+            <div class="login-box">
+                <h1>Connexion au Capteur</h1>
+                <p>Connectez-vous au module Bluetooth HC-05 pour commencer</p>
+                
+                <div id="status" class="status disconnected">Statut: Non connecté</div>
+                
+                <button id="connectBtn" class="btn">Se connecter au Bluetooth</button>
+            </div>
+             <!-- Section Historique -->
+            <div class="login-box">
+                <h1>Accès à l'historique</h1>
+                <p>Sélectionnez un patient pour voir son historique</p>
+                
                 <div class="form-group">
-                    <label for="patientSelect">Sélectionnez un patient :</label>
                     <select id="patientSelect" class="form-control">
                         <option value="">-- Choisissez un patient --</option>
-                        <!-- Les options seront ajoutées dynamiquement -->
                     </select>
                 </div>
-                <button id="viewHistoryBtn" class="btn btn-secondary">Voir l'historique</button>
+                
+                <button id="viewHistoryBtn" class="btn">Voir l'historique</button>
+            </div>
         </div>
     </div>
 
@@ -48,10 +52,10 @@
         localStorage.removeItem('currentMeasurement');
 
         
-        // Charger la liste des patients au démarrage
         document.addEventListener('DOMContentLoaded', () => {
+            // Remplir la liste des patients
             const measurements = JSON.parse(localStorage.getItem('measurements')) || [];
-            const uniquePatients = [...new Set(measurements.map(m => m.userName))];
+            const uniquePatients = [...new Set(measurements.map(m => m.userName).filter(name => name))];
             const select = document.getElementById('patientSelect');
             
             uniquePatients.forEach(patient => {
@@ -60,17 +64,17 @@
                 option.textContent = patient;
                 select.appendChild(option);
             });
-        });
 
-        // Bouton Voir l'historique
-        document.getElementById('viewHistoryBtn').addEventListener('click', () => {
-            const selectedPatient = document.getElementById('patientSelect').value;
-            if (selectedPatient) {
-                localStorage.setItem('currentUser', selectedPatient);
-                window.location.href = 'history.html';
-            } else {
-                alert('Veuillez sélectionner un patient');
-            }
+            // Gestion du bouton Historique
+            document.getElementById('viewHistoryBtn').addEventListener('click', () => {
+                const selectedPatient = select.value;
+                if (selectedPatient) {
+                    localStorage.setItem('currentUser', selectedPatient);
+                    window.location.href = 'history.html';
+                } else {
+                    alert('Veuillez sélectionner un patient');
+                }
+            });
         });
     </script>
 </body>
